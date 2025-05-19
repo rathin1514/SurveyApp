@@ -1,0 +1,50 @@
+.survey-form-container {
+    display: flex;
+    justify-content: flex-start;
+    text-align: left;
+    padding: 20px 90px;
+
+}
+
+.survey-form-element {
+    width: 100%;
+    text-align: left;
+}
+
+.survey-heading {
+    background-color: transparent;
+    font-size: 40px;
+    text-align: start;
+    font-weight: bold;
+}
+
+.survey-heading:focus {
+    outline: none;
+}
+
+.survey-card-header {
+    display: block;
+    text-align: start;
+    font-size: large;
+}
+
+.question-field {
+    text-align: start;
+    padding-left: 15px;
+}
+
+.add-question-button {
+    width: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+    font-size: 25px;
+    margin-left: 45px;
+    background-color: gray;
+}
+
+.create-question-button {
+    display: block;
+    margin: auto;
+    margin-top: 30px;
+    text-align: center;
+}
