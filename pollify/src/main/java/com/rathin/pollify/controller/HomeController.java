@@ -1,4 +1,4 @@
-package com.rathin.pollify;
+package com.rathin.pollify.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
