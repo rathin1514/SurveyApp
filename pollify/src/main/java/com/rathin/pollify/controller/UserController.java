@@ -45,4 +45,13 @@ public class UserController {
         }
             return "Invalid credentials!";
         }
+
+    @GetMapping("/logout")
+    public String logoutUser(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        return "Logout successful!";
+    }
 }

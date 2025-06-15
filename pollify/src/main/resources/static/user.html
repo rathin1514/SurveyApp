@@ -21,6 +21,7 @@
             <h1>Pollify</h1>
         </div>
         <div>
+            <button class="btn-primary mx-auto mb-3" onclick="logoutUser()">LogOut</button>
         </div>
     </nav>
 
@@ -61,4 +62,22 @@
     <footer>Made by Rathin</footer>
 </body>
 
+<script>
+    async function logoutUser() {
+
+    const response = await fetch("/api/users/logout", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+
+    if (response.ok) {
+        window.location.href = '/login.html';
+    } else {
+        alert('Failed to log out. Try again.');
+    }
+}
+</script>
 </html>
