@@ -1,0 +1,17 @@
+.join-card-body {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.image-div {
+    height: 300px;
+    width: 300px;
+}
+
+.qr-code {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

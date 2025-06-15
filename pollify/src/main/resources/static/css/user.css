@@ -1,0 +1,23 @@
+
+.create-button {
+    font-size: 25px;
+    font-weight: 400;
+}
+
+.survey-card-header {
+    padding: 0px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.survey-buttons {
+    margin: auto;
+    display: flex;
+    width: 50%;
+    justify-content: space-between;
+}
+
+.basic {
+    background-color: gray;
+}
