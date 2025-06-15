@@ -11,7 +11,7 @@
 .bar-container {
     width: 500px;
     height: 30px;
-    background-color: aliceblue;
+    background-color: rgba(255, 255, 255, 0.102);
     margin-bottom: 10px;
 }
 
