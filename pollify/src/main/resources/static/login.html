@@ -26,18 +26,38 @@
     <section id="Signin" class="container-fluid m-auto card-container p-5 mt-5">
         <div class="card px-3 py-3 form-card mx-auto p-5">
             <h1 class="my-3">Sign In</h1>
-            <div class="credentials mb-2">
-                <label>Username :</label>
-                <input type="text" name="username" id="username" placeholder="username">
-                <label class="mt-3">Password :</label>
-                <input type="password" name="password" id="password" placeholder="password">
-            </div>
-            <button class="btn-primary mx-auto mb-3">SignIn</button>
+            <form id="loginForm">
+                <div class="credentials mb-2">
+                    <label>Username :</label>
+                    <input type="text" name="username" id="username" placeholder="username" required>
+                    <label class="mt-3">Password :</label>
+                    <input type="password" name="password" id="password" placeholder="password" required>
+                </div>
+                <button type="submit" class="btn-primary mx-auto mb-3">SignIn</button>
+            </form>
             <p>Don't have account yet? <a href="/register">register</a></p>
         </div>
     </section>
 
     <footer>Made by Rathin</footer>
 </body>
+
+<script>
+    document.getElementById("loginForm").addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    const response = await fetch("http://localhost:8080/api/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+    });
+
+    const message = await response.text();
+    alert(message);
+});
+</script>
 
 </html>

@@ -1,10 +1,12 @@
 package com.rathin.pollify.controller;
 
+import com.rathin.pollify.dto.LoginRequest;
 import com.rathin.pollify.dto.RegisterRequest;
 import com.rathin.pollify.entity.User;
 import com.rathin.pollify.repository.UserRepository;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -28,4 +30,13 @@ public class UserController {
 
     return "User registered successfully!";
     }
+
+    @PostMapping("/login")
+    public String loginUser(@RequestBody LoginRequest loginRequest) {
+        Optional<User> foundUser = userRepository.findByUsername(loginRequest.getUsername());
+        if (foundUser.isPresent() && foundUser.get().getPassword().equals(loginRequest.getPassword())) {
+            return "Login successful!";
+        }
+            return "Invalid credentials!";
+        }
 }
