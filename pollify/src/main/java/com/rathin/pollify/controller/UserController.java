@@ -4,6 +4,10 @@ import com.rathin.pollify.dto.LoginRequest;
 import com.rathin.pollify.dto.RegisterRequest;
 import com.rathin.pollify.entity.User;
 import com.rathin.pollify.repository.UserRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Optional;
@@ -32,9 +36,11 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String loginUser(@RequestBody LoginRequest loginRequest) {
+    public String loginUser(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         Optional<User> foundUser = userRepository.findByUsername(loginRequest.getUsername());
         if (foundUser.isPresent() && foundUser.get().getPassword().equals(loginRequest.getPassword())) {
+            HttpSession session = request.getSession(true);
+            session.setAttribute("user", foundUser.get());
             return "Login successful!";
         }
             return "Invalid credentials!";
