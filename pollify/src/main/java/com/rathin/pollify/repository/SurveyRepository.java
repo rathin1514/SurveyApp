@@ -9,5 +9,6 @@ import com.rathin.pollify.entity.User;
 
     public interface SurveyRepository extends JpaRepository<Survey, Long> {
     List<Survey> findByUser(User user);
+    List<Survey> findByUserId(Long userId);
 }
 

@@ -52,11 +52,16 @@
     const response = await fetch("/api/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username, password }),
+        credentials: "include"
     });
 
-    const message = await response.text();
-    alert(message);
+    if (response.ok) {
+        window.location.href = "/user.html";
+    } else {
+        const message = await response.text();
+        alert(message);
+    }
 });
 </script>
 

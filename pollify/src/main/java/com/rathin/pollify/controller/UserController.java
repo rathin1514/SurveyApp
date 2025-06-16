@@ -40,7 +40,8 @@ public class UserController {
         Optional<User> foundUser = userRepository.findByUsername(loginRequest.getUsername());
         if (foundUser.isPresent() && foundUser.get().getPassword().equals(loginRequest.getPassword())) {
             HttpSession session = request.getSession(true);
-            session.setAttribute("user", foundUser.get());
+            session.setAttribute("userId", foundUser.get().getId());
+            session.setAttribute("username", foundUser.get().getUsername());
             return "Login successful!";
         }
             return "Invalid credentials!";
@@ -53,5 +54,22 @@ public class UserController {
             session.invalidate();
         }
         return "Logout successful!";
+    }
+
+    @GetMapping("/me")
+    public Object getCurrentUser(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return new org.springframework.http.ResponseEntity<>("Not logged in", org.springframework.http.HttpStatus.UNAUTHORIZED);
+        }
+        Long userId = (Long) session.getAttribute("userId");
+        String username = (String) session.getAttribute("username");
+        if (userId == null || username == null) {
+            return new org.springframework.http.ResponseEntity<>("Not logged in", org.springframework.http.HttpStatus.UNAUTHORIZED);
+        }
+        java.util.Map<String, Object> map = new java.util.HashMap<>();
+        map.put("userId", userId);
+        map.put("username", username);
+        return map;
     }
 }

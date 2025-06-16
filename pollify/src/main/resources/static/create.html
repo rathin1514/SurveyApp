@@ -33,14 +33,7 @@
             <div class="card px-2 py-3 form-card mx-auto p-5 mb-4 mt-4 survey-form-card">
                 <div class="survey-card-header">
                     <label for="">Question :</label>
-                    <input type="text" id="question" name="question" class="question-field" placeholder="Type your question here">
-                </div>
-            </div>
-
-            <div class="card px-2 py-3 form-card mx-auto p-5 mb-4 mt-4 survey-form-card">
-                <div class="survey-card-header">
-                    <label for="">Question :</label>
-                    <input type="text" id="question" name="question" class="question-field" placeholder="Type your question here">
+                    <input type="text" name="question" class="question-field" placeholder="Type your question here">
                 </div>
             </div>
 
@@ -50,5 +43,64 @@
         </form>
     </section>
 </body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.querySelector(".survey-form-element");
+        const addBtn = document.querySelector(".add-question-button");
+        const createBtn = document.querySelector(".create-question-button");
+        const container = document.querySelector("#survey-form");
+
+        addBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+
+            const card = document.createElement("div");
+            card.className = "card px-2 py-3 form-card mx-auto p-5 mb-4 mt-4 survey-form-card";
+            card.innerHTML = `
+                <div class="survey-card-header">
+                    <label for="">Question :</label>
+                    <input type="text" name="question" class="question-field" placeholder="Type your question here">
+                </div>
+            `;
+            form.insertBefore(card, addBtn);
+        });
+
+        createBtn.addEventListener("click", async (e) => {
+            e.preventDefault();
+
+            const surveyName = document.getElementById("surveyname").value.trim();
+            const questionInputs = document.querySelectorAll('input[name="question"]');
+
+            const questions = [];
+            questionInputs.forEach(input => {
+                const value = input.value.trim();
+                if (value) questions.push(value);
+            });
+
+            if (!surveyName || questions.length === 0) {
+                alert("Survey name and at least one question are required.");
+                return;
+            }
+
+            const response = await fetch("/api/surveys/create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    title: surveyName,
+                    questions: questions
+                })
+            });
+
+            if (response.ok) {
+                window.location.href = "/home";
+            } else {
+                alert("Failed to create survey.");
+            }
+        });
+    });
+</script>
 
 </html>

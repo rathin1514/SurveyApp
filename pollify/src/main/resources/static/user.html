@@ -26,58 +26,76 @@
     </nav>
 
     <section id="hero" class="my-5">
-        <h1 class="mb-4">Welcome User!</h1>
-        <button class="create-button"><a href="/new"> + &nbsp;Create</a></button>
+        <h1 class="mb-4">Welcome <span id="username">User</span>!</h1>
     </section>
     <section id="quiz" class="container-fluid m-auto survey-card-container p-5 mt-5">
-        <div class="card px-3 py-3 form-card mx-auto p-5 mb-5">
-            <div class="survey-card-header">
-                <h3 class="my-3">Survey Name</h3>
-                <p>15-01-2025</p>
-            </div>
-
-            <div class="survey-buttons">
-                <button class="btn-primary mx-auto mb-3 basic">Edit Survey</button>
-                <button class="btn-primary mx-auto mb-3"><a href="/join">Start Survey</a></button>
-                <button class="btn-primary mx-auto mb-3 basic"><a href="/result">Show Results</a></button>
-            </div>
-
-        </div>
-
-        <div class="card px-3 py-3 form-card mx-auto p-5 mb-5">
-            <div class="survey-card-header">
-                <h3 class="my-3">Survey Name</h3>
-                <p>15-01-2025</p>
-            </div>
-
-            <div class="survey-buttons">
-                <button class="btn-primary mx-auto mb-3 basic">Edit Survey</button>
-                <button class="btn-primary mx-auto mb-3"><a href="/join">Start Survey</a></button>
-                <button class="btn-primary mx-auto mb-3 basic"><a href="/result">Show Results</a></button>
-            </div>
-
-        </div>
+        <button class="create-button mb-4"><a href="/new"> + &nbsp;Create</a></button>
+        <div id="surveyCards" class="row justify-content-center"></div>
     </section>
 
     <footer>Made by Rathin</footer>
 </body>
 
 <script>
-    async function logoutUser() {
+    document.addEventListener("DOMContentLoaded", async () => {
+        const container = document.getElementById("surveyCards");
 
-    const response = await fetch("/api/users/logout", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-            "Content-Type": "application/json"
+        try {
+            const res = await fetch("/api/surveys/user", {
+                method: "GET",
+                credentials: "include"
+            });
+
+            if (!res.ok) throw new Error("Failed to load surveys");
+
+            const data = await res.json();
+            const surveys = data.surveys || [];
+
+            // Set username from response
+            document.getElementById('username').textContent = data.username || 'User';
+
+            if (surveys.length === 0) return;
+
+            surveys.forEach(survey => {
+                const card = document.createElement("div");
+                card.className = "card px-3 py-3 form-card mx-auto p-5 mb-5";
+                card.innerHTML = `
+                    <div class="survey-card-header">
+                        <h3 class="my-3">${survey.title}</h3>
+                        <p>${new Date(survey.createdAt).toLocaleDateString()}</p>
+                    </div>
+                    <div class="survey-buttons">
+                        <button class="btn-primary mx-auto mb-3 basic">Edit Survey</button>
+                        <button class="btn-primary mx-auto mb-3">
+                            <a href="/join?id=${survey.id}">Start Survey</a>
+                        </button>
+                        <button class="btn-primary mx-auto mb-3 basic">
+                            <a href="/result?id=${survey.id}">Show Results</a>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        } catch (err) {
+            console.error(err);
+            alert("Could not fetch surveys.");
         }
     });
 
-    if (response.ok) {
-        window.location.href = '/login.html';
-    } else {
-        alert('Failed to log out. Try again.');
+    async function logoutUser() {
+        const response = await fetch("/api/users/logout", {
+            method: "GET",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (response.ok) {
+            window.location.href = '/login.html';
+        } else {
+            alert('Failed to log out. Try again.');
+        }
     }
-}
 </script>
 </html>
