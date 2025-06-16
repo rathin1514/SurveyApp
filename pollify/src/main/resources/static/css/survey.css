@@ -1,0 +1,39 @@
+.vote-form-card {
+            border-radius: 25px;
+            background-color: rgb(0, 0, 0);
+            margin-bottom: 24px;
+            padding: 10px 25px;
+            padding-top: 20px;
+        }
+
+        .question-label {
+            font-size: 19px;
+            margin-bottom: 12px;
+            display: block;
+            text-align: left;
+        }
+
+        .radio-group {
+            display: flex;
+            max-width: 300px;
+            margin-bottom: 7px;
+            vertical-align: middle;
+        }
+
+        input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+
+        .choice {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+
+        .vote-submit-btn {
+            width: 200px;
+            font-size: 1.2rem;
+            margin-top: 24px;
+        }
