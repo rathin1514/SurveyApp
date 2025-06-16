@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.rathin.pollify.dto.CreateSurveyRequest;
+import com.rathin.pollify.dto.SurveyDetailResponse;
 import com.rathin.pollify.entity.Question;
 import com.rathin.pollify.entity.Survey;
 import com.rathin.pollify.entity.User;
@@ -87,4 +88,25 @@ public class SurveyController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getSurveyById(@PathVariable Long id, HttpSession session) {
+    Long userId = (Long) session.getAttribute("userId");
+    if (userId == null) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not logged in");
+    }
+
+    Survey survey = surveyRepository.findById(id).orElse(null);
+    if (survey == null || !survey.getUser().getId().equals(userId)) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Survey not found or access denied");
+    }
+
+    List<String> questionTexts = survey.getQuestions().stream()
+        .map(q -> q.getQuestion())
+        .collect(Collectors.toList());
+
+    SurveyDetailResponse response = new SurveyDetailResponse(survey.getTitle(), questionTexts);
+
+    return ResponseEntity.ok(response);
+}
 }

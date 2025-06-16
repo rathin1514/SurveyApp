@@ -64,7 +64,9 @@
                         <p>${new Date(survey.createdAt).toLocaleDateString()}</p>
                     </div>
                     <div class="survey-buttons">
-                        <button class="btn-primary mx-auto mb-3 basic">Edit Survey</button>
+                        <button class="btn-primary mx-auto mb-3 basic">
+                            <a href="/survey.html?id=${survey.id}">Show Survey</a>
+                        </button>
                         <button class="btn-primary mx-auto mb-3">
                             <a href="/join?id=${survey.id}">Start Survey</a>
                         </button>

@@ -31,14 +31,50 @@
         <div class="survey-form-element">
             <h1 id="survey-title" class="survey-heading mb-4">Survey name</h1>
             <form id="voteForm">
-                <div id="questions-container">
-                    <div class="vote-form-card">
-                        <label class="question-label">What is your question 1?</label>
-                    </div>
-                </div>
+                <div id="questions-container"></div>
             </form>
         </div>
     </section>
 </body>
+
+<script>
+     document.addEventListener("DOMContentLoaded", async () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const surveyId = urlParams.get("id");
+
+        if (!surveyId) {
+            alert("No survey ID provided.");
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/surveys/${surveyId}`, {
+                method: "GET",
+                credentials: "include"
+            });
+
+            if (!res.ok) throw new Error("Failed to load survey");
+
+            const data = await res.json();
+
+            document.getElementById("survey-title").textContent = data.title;
+
+            const container = document.getElementById("questions-container");
+            container.innerHTML = "";
+
+            data.questions.forEach((q, index) => {
+                const questionEl = document.createElement("div");
+                questionEl.className = "vote-form-card";
+                questionEl.innerHTML = `
+                    <label class="question-label">${index + 1}. ${q}</label>
+                `;
+                container.appendChild(questionEl);
+            });
+        } catch (err) {
+            console.error(err);
+            alert("Could not fetch survey details.");
+        }
+    });
+</script>
 
 </html>
