@@ -51,7 +51,6 @@
             const data = await res.json();
             const surveys = data.surveys || [];
 
-            // Set username from response
             document.getElementById('username').textContent = data.username || 'User';
 
             if (surveys.length === 0) return;

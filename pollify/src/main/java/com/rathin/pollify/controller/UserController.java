@@ -55,21 +55,4 @@ public class UserController {
         }
         return "Logout successful!";
     }
-
-    @GetMapping("/me")
-    public Object getCurrentUser(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            return new org.springframework.http.ResponseEntity<>("Not logged in", org.springframework.http.HttpStatus.UNAUTHORIZED);
-        }
-        Long userId = (Long) session.getAttribute("userId");
-        String username = (String) session.getAttribute("username");
-        if (userId == null || username == null) {
-            return new org.springframework.http.ResponseEntity<>("Not logged in", org.springframework.http.HttpStatus.UNAUTHORIZED);
-        }
-        java.util.Map<String, Object> map = new java.util.HashMap<>();
-        map.put("userId", userId);
-        map.put("username", username);
-        return map;
-    }
 }
