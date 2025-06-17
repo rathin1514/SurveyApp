@@ -46,7 +46,7 @@ ENV PGDATA="/usr/local/pgsql/data"
 
 USER postgres
 
-RUN initdb -D $PGDATA
+# RUN initdb -D $PGDATA
 
 COPY --chown=postgres:postgres init-db.sh /docker-entrypoint-initdb.d/init-db.sh
 RUN chmod +x /docker-entrypoint-initdb.d/init-db.sh
