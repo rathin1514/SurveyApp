@@ -1,13 +1,13 @@
 FROM alpine:latest
 
-RUN apk add --no-cache bash curl tar
-
 # Java 21
-ENV JAVA_VERSION=21.0.2
-ENV JAVA_BUILD=9
-ENV JAVA_PACKAGE=OpenJDK21U-jdk_x64_alpine_linux_hotspot_${JAVA_VERSION}_${JAVA_BUILD}.tar.gz
+ENV JAVA_VERSION=21.0.7
+ENV JAVA_BUILD=6
+ENV JAVA_ARCH=aarch64
+ENV JAVA_PACKAGE=OpenJDK21U-jdk_${JAVA_ARCH}_alpine-linux_hotspot_${JAVA_VERSION}_${JAVA_BUILD}.tar.gz
 
-RUN curl -L -o /tmp/${JAVA_PACKAGE} https://github.com/adoptium/temurin21-binaries/releases/download/jdk-${JAVA_VERSION}%2B${JAVA_BUILD}/${JAVA_PACKAGE} \
+RUN apk add --no-cache curl tar libc6-compat \
+    && curl -L -o /tmp/${JAVA_PACKAGE} https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jdk_aarch64_alpine-linux_hotspot_21.0.7_6.tar.gz \
     && mkdir /opt/java \
     && tar -xzf /tmp/${JAVA_PACKAGE} -C /opt/java --strip-components=1 \
     && rm /tmp/${JAVA_PACKAGE}
@@ -15,8 +15,6 @@ RUN curl -L -o /tmp/${JAVA_PACKAGE} https://github.com/adoptium/temurin21-binari
 #ENV variables
 ENV JAVA_HOME=/opt/java
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
-
-RUN java -version
 
 WORKDIR /app
 COPY target/pollify-0.0.1-SNAPSHOT.jar app.jar
