@@ -117,5 +117,28 @@ public class SurveyController {
     SurveyDetailResponse response = new SurveyDetailResponse(survey.getTitle(), questionResponses);
 
     return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/public/{id}")
+    public ResponseEntity<?> getPublicSurveyById(@PathVariable Long id) {
+    Survey survey = surveyRepository.findById(id).orElse(null);
+    if (survey == null) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Survey not found");
+    }
+
+    List<QuestionResponse> questionResponses = survey.getQuestions().stream()
+        .map(q -> new QuestionResponse(
+            q.getId(),
+            q.getQuestion(),
+            List.of(
+                new OptionResponse("yes", "Yes"),
+                new OptionResponse("no", "No")
+            )
+        ))
+        .collect(Collectors.toList());
+
+    SurveyDetailResponse response = new SurveyDetailResponse(survey.getTitle(), questionResponses);
+    return ResponseEntity.ok(response);
 }
+
 }

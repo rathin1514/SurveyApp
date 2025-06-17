@@ -52,7 +52,7 @@
         }
 
         try {
-            const response = await fetch(`/api/surveys/${surveyId}`, {
+            const response = await fetch(`/api/surveys/public/${surveyId}`, {
                 method: "GET",
                 credentials: "include"
             });
