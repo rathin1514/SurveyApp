@@ -22,4 +22,32 @@ public class Vote {
 
     @Column(nullable = false)
     private boolean vote;
+
+    public Vote() {
+    }
+
+    public Vote(Question question, boolean vote) {
+        this.question = question;
+        this.vote = vote;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
+    }
+
+    public boolean isVote() {
+        return vote;
+    }
+
+    public void setVote(boolean vote) {
+        this.vote = vote;
+    }
 }
