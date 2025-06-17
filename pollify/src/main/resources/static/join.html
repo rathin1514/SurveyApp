@@ -27,11 +27,11 @@
     <section id="Signin" class="container-fluid m-auto card-container p-5 mt-5">
         <div class="card px-3 py-5 form-card mx-auto p-5">
             <div class="join-card-body">
-                <div class="image-div">
-                    <img src="/css/astern.png" alt="QR-Code" class="qr-code">
+                <div class="image-div mb-5">
+                    <img src="/css/astern.png" alt="QR-Code" class="qr-code" id="qrImage">
                 </div>
                 <div class="link-div mb-2">
-                    <p class="join-link"><a href="google.com">https://link_to_the_survey</a></p>
+                    <p class="join-link"><a href="#" id="surveyLink">https://link_to_the_survey</a></p>
                 </div>
             </div>
             
@@ -41,5 +41,40 @@
 
     <footer>Made by Rathin</footer>
 </body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const surveyId = urlParams.get("id");
+
+      if (!surveyId) {
+        alert("No survey ID provided in URL.");
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/survey-links/${surveyId}`, {
+          method: "GET",
+          credentials: "include"
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to generate survey link and QR code");
+        }
+
+        const data = await response.json();
+        const qrImage = document.getElementById("qrImage");
+        const surveyLink = document.getElementById("surveyLink");
+
+        qrImage.src = data.qrCodePath.replace(/\\/g, "/");
+        surveyLink.href = data.votingUrl;
+        surveyLink.textContent = data.votingUrl;
+
+      } catch (err) {
+        console.error(err);
+        alert("Could not load QR code and survey link.");
+      }
+    });
+  </script>
 
 </html>

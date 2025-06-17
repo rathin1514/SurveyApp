@@ -8,4 +8,5 @@ import com.rathin.pollify.entity.SurveyLink;
 
 public interface SurveyLinkRepository extends JpaRepository<SurveyLink, Long> {
     Optional<SurveyLink> findByLink(String link);
+    Optional<SurveyLink> findBySurvey_Id(Long surveyId);
 }

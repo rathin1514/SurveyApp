@@ -67,9 +67,7 @@
                         <button class="btn-primary mx-auto mb-3 basic">
                             <a href="/survey.html?id=${survey.id}">Show Survey</a>
                         </button>
-                        <button class="btn-primary mx-auto mb-3">
-                            <a href="/join?id=${survey.id}">Start Survey</a>
-                        </button>
+                        <button class="btn-primary mx-auto mb-3" onclick="startSurvey(${survey.id})">Start Survey</button>
                         <button class="btn-primary mx-auto mb-3 basic">
                             <a href="/result?id=${survey.id}">Show Results</a>
                         </button>
@@ -82,6 +80,25 @@
             alert("Could not fetch surveys.");
         }
     });
+
+    async function startSurvey(surveyId) {
+    try {
+        const response = await fetch(`/api/survey-links/generate/${surveyId}`, {
+            method: "POST",
+            credentials: "include"
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to create survey link");
+        }
+
+        // Once link is generated, redirect to join page
+        window.location.href = `/join.html?id=${surveyId}`;
+    } catch (err) {
+        console.error("Error generating survey link:", err);
+        alert("Could not start survey.");
+    }
+}
 
     async function logoutUser() {
         const response = await fetch("/api/users/logout", {

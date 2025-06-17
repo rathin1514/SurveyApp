@@ -71,7 +71,7 @@ public class SurveyLink {
         this.survey = survey;
     }
 
-    public void setCreatedAt(LocalDateTime now) {
-        throw new UnsupportedOperationException("Unimplemented method 'setCreatedAt'");
+    public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
     }
 }

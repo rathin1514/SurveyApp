@@ -21,6 +21,7 @@ public class SurveyLinkController {
 
     @PostMapping("/generate/{surveyId}")
     public ResponseEntity<?> generateSurveyLink(@PathVariable Long surveyId, HttpServletRequest request) {
+        System.out.println(">>> Controller: generateSurveyLink() triggered with surveyId = " + surveyId);
         try {
             SurveyLink surveyLink = surveyLinkService.generateSurveyLink(surveyId, request);
             String votingUrl = request.getRequestURL().toString()
@@ -41,4 +42,23 @@ public class SurveyLinkController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/{surveyId}")
+public ResponseEntity<?> getSurveyLink(@PathVariable Long surveyId, HttpServletRequest request) {
+    SurveyLink link = surveyLinkService.findBySurveyId(surveyId);
+    if (link == null) {
+        return ResponseEntity.status(404).body("No survey link found");
+    }
+
+    String baseUrl = request.getRequestURL().toString().replace(request.getRequestURI(), "");
+    String votingUrl = baseUrl + "/vote/" + link.getLink();
+
+    Map<String, Object> response = new HashMap<>();
+    response.put("linkToken", link.getLink());
+    response.put("votingUrl", votingUrl);
+    response.put("qrCodePath", "/" + link.getQrCodePath().replace("\\", "/")); // ensure slashes for URLs
+    response.put("createdAt", link.getCreatedAt());
+
+    return ResponseEntity.ok(response);
+}
 }
