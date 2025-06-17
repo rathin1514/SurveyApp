@@ -48,7 +48,10 @@ USER postgres
 
 RUN initdb -D $PGDATA
 
+COPY --chown=postgres:postgres init-db.sh /docker-entrypoint-initdb.d/init-db.sh
+RUN chmod +x /docker-entrypoint-initdb.d/init-db.sh
+
 EXPOSE 5432
 
 # Start PostgreSQL server
-CMD ["postgres", "-D", "/usr/local/pgsql/data"]
+CMD ["sh", "-c", "/docker-entrypoint-initdb.d/init-db.sh && exec postgres -D /usr/local/pgsql/data"]
