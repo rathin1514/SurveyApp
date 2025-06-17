@@ -21,12 +21,10 @@ public class SurveyLinkController {
 
     @PostMapping("/generate/{surveyId}")
     public ResponseEntity<?> generateSurveyLink(@PathVariable Long surveyId, HttpServletRequest request) {
-        System.out.println(">>> Controller: generateSurveyLink() triggered with surveyId = " + surveyId);
         try {
             SurveyLink surveyLink = surveyLinkService.generateSurveyLink(surveyId, request);
-            String votingUrl = request.getRequestURL().toString()
-                    .replace(request.getRequestURI(), "")
-                    + "/vote/" + surveyLink.getLink();
+            String baseUrl = request.getRequestURL().toString().replace(request.getRequestURI(), "");
+            String votingUrl = baseUrl + "/vote/" + surveyLink.getLink();
 
             Map<String, Object> response = new HashMap<>();
             response.put("linkToken", surveyLink.getLink());

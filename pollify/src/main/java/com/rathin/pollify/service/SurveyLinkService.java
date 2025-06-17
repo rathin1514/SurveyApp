@@ -56,7 +56,7 @@ public class SurveyLinkService {
         }
 
         String token = UUID.randomUUID().toString();
-        String baseUrl = request.getRequestURL().toString().replace(request.getRequestURI(), "");
+        String baseUrl = getBaseUrl(request);
         String fullLink = baseUrl + "/vote/" + token;
 
         String fileName = "qr_" + token + ".png";
@@ -83,4 +83,13 @@ public class SurveyLinkService {
     public SurveyLink findBySurveyId(Long surveyId) {
         return surveyLinkRepository.findBySurvey_Id(surveyId).orElse(null);
     }
+
+    public SurveyLink findByToken(String token) {
+        return surveyLinkRepository.findByLink(token).orElse(null);
+    }
+
+    private String getBaseUrl(HttpServletRequest request) {
+    return request.getRequestURL().toString().replace(request.getRequestURI(), "");
+}
+
 }

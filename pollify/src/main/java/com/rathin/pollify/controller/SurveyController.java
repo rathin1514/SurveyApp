@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.rathin.pollify.dto.CreateSurveyRequest;
+import com.rathin.pollify.dto.OptionResponse;
+import com.rathin.pollify.dto.QuestionResponse;
 import com.rathin.pollify.dto.SurveyDetailResponse;
 import com.rathin.pollify.entity.Question;
 import com.rathin.pollify.entity.Survey;
@@ -101,11 +103,18 @@ public class SurveyController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Survey not found or access denied");
     }
 
-    List<String> questionTexts = survey.getQuestions().stream()
-        .map(q -> q.getQuestion())
+    List<QuestionResponse> questionResponses = survey.getQuestions().stream()
+        .map(q -> new QuestionResponse(
+            q.getId(),
+            q.getQuestion(),
+            List.of(
+                new OptionResponse("yes", "Yes"),
+                new OptionResponse("no", "No")
+            )
+        ))
         .collect(Collectors.toList());
 
-    SurveyDetailResponse response = new SurveyDetailResponse(survey.getTitle(), questionTexts);
+    SurveyDetailResponse response = new SurveyDetailResponse(survey.getTitle(), questionResponses);
 
     return ResponseEntity.ok(response);
 }

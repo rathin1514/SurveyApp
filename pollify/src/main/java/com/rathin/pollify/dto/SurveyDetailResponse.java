@@ -4,11 +4,11 @@ import java.util.List;
 
 public class SurveyDetailResponse {
     private String title;
-    private List<String> questions;
+    private List<QuestionResponse> questions;
 
     public SurveyDetailResponse() {}
 
-    public SurveyDetailResponse(String title, List<String> questions) {
+    public SurveyDetailResponse(String title, List <QuestionResponse> questions) {
         this.title = title;
         this.questions = questions;
     }
@@ -21,11 +21,11 @@ public class SurveyDetailResponse {
         this.title = title;
     }
 
-    public List<String> getQuestions() {
+    public List<QuestionResponse> getQuestions() {
         return questions;
     }
 
-    public void setQuestions(List<String> questions) {
+    public void setQuestions(List<QuestionResponse> questions) {
         this.questions = questions;
     }
 }

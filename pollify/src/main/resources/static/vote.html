@@ -32,19 +32,6 @@
             <h1 id="survey-title" class="survey-heading mb-4">Survey name</h1>
             <form id="voteForm">
                 <div id="questions-container">
-                    <div class="vote-form-card">
-                        <label class="question-label">What is your question 1?</label>
-                        <div class="radio-group">
-                            <div class="choice">
-                                <input type="radio" id="yes" name="id" value="yes" required>
-                            <label for="yes">Yes</label>
-                            </div>
-                            <div class="choice">
-                                <input type="radio" id="no" name="id" value="no">
-                            <label for="no">No</label>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <button type="submit" class="btn-primary vote-submit-btn">Submit Vote</button>
             </form>
@@ -53,5 +40,84 @@
 
     <footer>Made by Rathin</footer>
 </body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const surveyId = urlParams.get("id");
+
+        if (!surveyId) {
+            alert("No survey ID provided in URL.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/surveys/${surveyId}`, {
+                method: "GET",
+                credentials: "include"
+            });
+
+            if (!response.ok) throw new Error("Failed to load survey");
+
+            const data = await response.json();
+            document.getElementById('survey-title').textContent = data.title || 'Survey Title';
+
+            const questionsContainer = document.getElementById('questions-container');
+            data.questions.forEach(question => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'vote-form-card';
+                questionDiv.innerHTML = `
+                    <label class="question-label">${question.text}</label>
+                    <div class="radio-group">
+                        ${question.options.map(option => `
+                            <div class="choice">
+                                <input type="radio" id="${question.id}-${option.id}" name="${question.id}" value="${option.id}" required>
+                                <label for="${question.id}-${option.id}">${option.text}</label>
+                            </div>
+                        `).join('')}
+                    </div>`;
+                questionsContainer.appendChild(questionDiv);
+            });
+        } catch (error) {
+            console.error("Error fetching survey:", error);
+        }
+
+        document.getElementById('voteForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const votes = [];
+        for (const [questionId, optionId] of formData.entries()) {
+            const voteBool = optionId.toLowerCase().includes('yes') ? true : false;
+
+            votes.push({
+                questionId: parseInt(questionId),
+                vote: voteBool
+            });
+        }
+
+        const payload = {
+            surveyId: parseInt(surveyId),
+            votes: votes
+        };
+
+            try {
+            const res = await fetch(`/api/votes/submit`, {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+                credentials: "include"
+            });
+
+            if (!res.ok) throw new Error("Failed to submit vote");
+
+            alert("Vote submitted successfully!");
+            window.location.href = `/results?id=${surveyId}`;
+        } catch (error) {
+            console.error("Error submitting vote:", error);
+            alert("Failed to submit vote. Please try again.");
+        }
+        });
+    });
+</script>
 
 </html>
