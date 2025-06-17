@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  db:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    container_name: pollify-db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/usr/local/pgsql/data
+    networks:
+      - backend
+    restart: unless-stopped
+
+  app:
+    build:
+      context: ./application/pollify
+      dockerfile: Dockerfile
+    container_name: pollify-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/pollify
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+    depends_on:
+      - db
+    networks:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+
+networks:
+  backend:
+    driver: bridge
