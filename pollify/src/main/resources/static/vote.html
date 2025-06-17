@@ -111,7 +111,7 @@
             if (!res.ok) throw new Error("Failed to submit vote");
 
             alert("Vote submitted successfully!");
-            window.location.href = `/results?id=${surveyId}`;
+            window.location.href = `/results.html?id=${surveyId}`;
         } catch (error) {
             console.error("Error submitting vote:", error);
             alert("Failed to submit vote. Please try again.");

@@ -28,66 +28,76 @@
 
     <section id="survey-form" class="container-fluid m-auto survey-form-container mt-5">
         <div class="survey-form-element">
-
             <h1 class="survey-heading">Survey name</h1>
-
-            <div class="card px-2 py-3 form-card mx-auto p-5 mb-4 mt-4 survey-form-card">
-                <div class="survey-card-header">
-                    <p class="question-element">Whatever your question was</p>
-                </div>
-
-                <div class="vote-container">
-                    <div class="vote-option">
-                        <span>Yes</span>
-                        <div class="voting-data">
-                            <div class="bar-container">
-                                <div class="bar yes-bar" style="width: 70%"></div> <!-- Width would be dynamic -->
-                            </div>
-                            <span class="vote-count">70 votes</span> <!-- Vote count dynamically updated -->
-                        </div>
-                    </div>
-
-                    <div class="vote-option">
-                        <span>No</span>
-                        <div class="voting-data">
-                            <div class="bar-container">
-                                <div class="bar no-bar" style="width: 30%"></div> <!-- Width would be dynamic -->
-                            </div>
-                            <span class="vote-count">30 votes</span> <!-- Vote count dynamically updated -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card px-2 py-3 form-card mx-auto p-5 mb-4 mt-4 survey-form-card">
-                <div class="survey-card-header">
-                    <p class="question-element">Whatever your question was</p>
-                </div>
-
-                <div class="vote-container">
-                    <div class="vote-option">
-                        <span>Yes</span>
-                        <div class="voting-data">
-                            <div class="bar-container">
-                                <div class="bar yes-bar" style="width: 70%"></div> <!-- Width would be dynamic -->
-                            </div>
-                            <span class="vote-count">70 votes</span> <!-- Vote count dynamically updated -->
-                        </div>
-                    </div>
-
-                    <div class="vote-option">
-                        <span>No</span>
-                        <div class="voting-data">
-                            <div class="bar-container">
-                                <div class="bar no-bar" style="width: 30%"></div> <!-- Width would be dynamic -->
-                            </div>
-                            <span class="vote-count">30 votes</span> <!-- Vote count dynamically updated -->
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </section>
 </body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const surveyId = urlParams.get("id");
+
+    if (!surveyId) {
+        alert("Survey ID not found!");
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/results/${surveyId}`);
+        if (!response.ok) throw new Error("Failed to fetch results");
+
+        const data = await response.json();
+        renderResults(data);
+    } catch (err) {
+        console.error("Error fetching results:", err);
+        alert("Could not load results.");
+    }
+});
+
+function renderResults(data) {
+    const container = document.querySelector(".survey-form-element");
+    document.querySelector(".survey-heading").textContent = data.title || "Survey Results";
+
+    data.results.forEach(question => {
+        const totalVotes = question.totalVotes || 1;
+
+        const yesPercent = Math.round((question.yesVotes / totalVotes) * 100);
+        const noPercent = Math.round((question.noVotes / totalVotes) * 100);
+
+        const card = document.createElement("div");
+        card.className = "card px-2 py-3 form-card mx-auto p-5 mb-4 mt-4 survey-form-card";
+        card.innerHTML = `
+            <div class="survey-card-header">
+                <p class="question-element">${question.questionText}</p>
+            </div>
+
+            <div class="vote-container">
+                <div class="vote-option">
+                    <span>Yes</span>
+                    <div class="voting-data">
+                        <div class="bar-container">
+                            <div class="bar yes-bar" style="width: ${yesPercent}%;"></div>
+                        </div>
+                        <span class="vote-count">${question.yesVotes} votes</span>
+                    </div>
+                </div>
+
+                <div class="vote-option">
+                    <span>No</span>
+                    <div class="voting-data">
+                        <div class="bar-container">
+                            <div class="bar no-bar" style="width: ${noPercent}%;"></div>
+                        </div>
+                        <span class="vote-count">${question.noVotes} votes</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+</script>
 
 </html>
