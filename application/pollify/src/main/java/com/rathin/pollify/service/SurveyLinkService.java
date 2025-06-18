@@ -7,10 +7,10 @@ import com.rathin.pollify.repository.SurveyLinkRepository;
 import com.rathin.pollify.repository.SurveyRepository;
 import com.rathin.pollify.util.QRCodeGenerator;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -32,10 +32,13 @@ public class SurveyLinkService {
     @Autowired
     private SurveyLinkRepository surveyLinkRepository;
 
+    @Value("${app.base-url}")
+    private String appBaseUrl;
+
     private static final String QR_CODE_DIR = "uploads/qrcodes/";
     private static final String QR_CODE_URL_PREFIX = "/qrcodes/";
 
-    public SurveyLink generateSurveyLink(Long surveyId, HttpServletRequest request) throws IOException, WriterException {
+    public SurveyLink generateSurveyLink(Long surveyId) throws IOException, WriterException {
         Optional<Survey> surveyOpt = surveyRepository.findById(surveyId);
         if (surveyOpt.isEmpty()) {
             throw new IllegalArgumentException("Survey not found");
@@ -56,8 +59,7 @@ public class SurveyLinkService {
         }
 
         String token = UUID.randomUUID().toString();
-        String baseUrl = getBaseUrl(request);
-        String fullLink = baseUrl + "/vote/" + token;
+        String fullLink = appBaseUrl + "/vote/" + token;
 
         String fileName = "qr_" + token + ".png";
         try {
@@ -87,9 +89,5 @@ public class SurveyLinkService {
     public SurveyLink findByToken(String token) {
         return surveyLinkRepository.findByLink(token).orElse(null);
     }
-
-    private String getBaseUrl(HttpServletRequest request) {
-    return request.getRequestURL().toString().replace(request.getRequestURI(), "");
-}
 
 }

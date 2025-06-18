@@ -5,6 +5,7 @@ import com.rathin.pollify.entity.SurveyLink;
 import com.rathin.pollify.service.SurveyLinkService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,25 +20,14 @@ public class SurveyLinkController {
     @Autowired
     private SurveyLinkService surveyLinkService;
 
-    private String getBaseUrl(HttpServletRequest request) {
-        String scheme = request.getScheme();
-        String serverName = request.getServerName();
-        int serverPort = request.getServerPort();
-
-        boolean isDefaultPort = (scheme.equals("http") && serverPort == 80)
-                             || (scheme.equals("https") && serverPort == 443);
-
-        return isDefaultPort
-                ? scheme + "://" + serverName
-                : scheme + "://" + serverName + ":" + serverPort;
-    }
+    @Value("${app.base-url}")
+    private String appBaseUrl;
 
     @PostMapping("/generate/{surveyId}")
-    public ResponseEntity<?> generateSurveyLink(@PathVariable Long surveyId, HttpServletRequest request) {
+    public ResponseEntity<?> generateSurveyLink(@PathVariable Long surveyId) {
         try {
-            SurveyLink surveyLink = surveyLinkService.generateSurveyLink(surveyId, request);
-            String baseUrl = getBaseUrl(request);
-            String votingUrl = baseUrl + "/vote/" + surveyLink.getLink();
+            SurveyLink surveyLink = surveyLinkService.generateSurveyLink(surveyId);
+            String votingUrl = appBaseUrl + "/vote/" + surveyLink.getLink();
 
             Map<String, Object> response = new HashMap<>();
             response.put("linkToken", surveyLink.getLink());
@@ -61,8 +51,7 @@ public ResponseEntity<?> getSurveyLink(@PathVariable Long surveyId, HttpServletR
         return ResponseEntity.status(404).body("No survey link found");
     }
 
-    String baseUrl = getBaseUrl(request);
-    String votingUrl = baseUrl + "/vote/" + link.getLink();
+    String votingUrl = appBaseUrl + "/vote/" + link.getLink();
 
     Map<String, Object> response = new HashMap<>();
     response.put("linkToken", link.getLink());
