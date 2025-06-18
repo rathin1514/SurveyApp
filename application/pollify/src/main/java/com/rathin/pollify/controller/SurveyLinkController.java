@@ -19,11 +19,24 @@ public class SurveyLinkController {
     @Autowired
     private SurveyLinkService surveyLinkService;
 
+    private String getBaseUrl(HttpServletRequest request) {
+        String scheme = request.getScheme();
+        String serverName = request.getServerName();
+        int serverPort = request.getServerPort();
+
+        boolean isDefaultPort = (scheme.equals("http") && serverPort == 80)
+                             || (scheme.equals("https") && serverPort == 443);
+
+        return isDefaultPort
+                ? scheme + "://" + serverName
+                : scheme + "://" + serverName + ":" + serverPort;
+    }
+
     @PostMapping("/generate/{surveyId}")
     public ResponseEntity<?> generateSurveyLink(@PathVariable Long surveyId, HttpServletRequest request) {
         try {
             SurveyLink surveyLink = surveyLinkService.generateSurveyLink(surveyId, request);
-            String baseUrl = request.getRequestURL().toString().replace(request.getRequestURI(), "");
+            String baseUrl = getBaseUrl(request);
             String votingUrl = baseUrl + "/vote/" + surveyLink.getLink();
 
             Map<String, Object> response = new HashMap<>();
@@ -48,13 +61,13 @@ public ResponseEntity<?> getSurveyLink(@PathVariable Long surveyId, HttpServletR
         return ResponseEntity.status(404).body("No survey link found");
     }
 
-    String baseUrl = request.getRequestURL().toString().replace(request.getRequestURI(), "");
+    String baseUrl = getBaseUrl(request);
     String votingUrl = baseUrl + "/vote/" + link.getLink();
 
     Map<String, Object> response = new HashMap<>();
     response.put("linkToken", link.getLink());
     response.put("votingUrl", votingUrl);
-    response.put("qrCodePath", "/" + link.getQrCodePath().replace("\\", "/")); // ensure slashes for URLs
+    response.put("qrCodePath", "/" + link.getQrCodePath().replace("\\", "/"));
     response.put("createdAt", link.getCreatedAt());
 
     return ResponseEntity.ok(response);
