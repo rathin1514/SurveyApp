@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pgdata
+  namespace: pollify
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pollify-db
+  namespace: pollify
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pollify-db
+  template:
+    metadata:
+      labels:
+        app: pollify-db
+    spec:
+      containers:
+        - name: postgres
+          image: pollify-db
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: pgdata
+              mountPath: /usr/local/pgsql/data
+          env:
+            - name: POSTGRES_DB
+              value: pollify
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: password
+      volumes:
+        - name: pgdata
+          persistentVolumeClaim:
+            claimName: pgdata
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pollify-db
+  namespace: pollify
+spec:
+  selector:
+    app: pollify-db
+  ports:
+    - port: 5432
+      targetPort: 5432
