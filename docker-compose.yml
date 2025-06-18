@@ -27,6 +27,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: password
     depends_on:
       - db
+    volumes:
+      - uploads:/app/uploads
     networks:
       - backend
     restart: unless-stopped
@@ -44,12 +46,29 @@ services:
       SPRING_DATASOURCE_PASSWORD: password
     depends_on:
       - db
+    volumes:
+      - uploads:/app/uploads
+    networks:
+      - backend
+    restart: unless-stopped
+
+  haproxy:
+    image: haproxy:alpine
+    container_name: pollify-haproxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    depends_on:
+      - pollify-app-1
+      - pollify-app-2
     networks:
       - backend
     restart: unless-stopped
 
 volumes:
   pgdata:
+  uploads:
 
 networks:
   backend:
