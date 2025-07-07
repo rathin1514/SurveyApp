@@ -2,20 +2,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: pollify-app
-  namespace: pollify
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: pollify-app
+      app: pollify
   template:
     metadata:
       labels:
-        app: pollify-app
+        app: pollify
     spec:
       containers:
-        - name: pollify-app
-          image: pollify-app
+        - name: pollify
+          image: pollify-app:latest
           ports:
             - containerPort: 8080
           env:
@@ -25,24 +24,16 @@ spec:
               value: postgres
             - name: SPRING_DATASOURCE_PASSWORD
               value: password
-            - name: APP_BASE_URL
-              value: http://haproxy-service
-          volumeMounts:
-            - name: uploads
-              mountPath: /app/uploads
-      volumes:
-        - name: uploads
-          emptyDir: {}
-
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: pollify-app
-  namespace: pollify
+  name: pollify-service
 spec:
   selector:
-    app: pollify-app
+    app: pollify
   ports:
-    - port: 8080
+    - protocol: TCP
+      port: 80
       targetPort: 8080
+  type: ClusterIP

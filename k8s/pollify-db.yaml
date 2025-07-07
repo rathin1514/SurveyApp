@@ -1,23 +1,19 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pgdata
-  namespace: pollify
+  name: postgres-pvc
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 500Mi
-
+      storage: 1Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: pollify-db
-  namespace: pollify
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: pollify-db
@@ -28,33 +24,27 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: pollify-db
+          image: pollify-db:latest
           ports:
             - containerPort: 5432
-          volumeMounts:
-            - name: pgdata
-              mountPath: /usr/local/pgsql/data
           env:
-            - name: POSTGRES_DB
-              value: pollify
-            - name: POSTGRES_USER
-              value: postgres
-            - name: POSTGRES_PASSWORD
-              value: password
+            - name: PGDATA
+              value: /var/lib/postgresql/data
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
       volumes:
-        - name: pgdata
+        - name: postgres-storage
           persistentVolumeClaim:
-            claimName: pgdata
-
+            claimName: postgres-pvc
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: pollify-db
-  namespace: pollify
 spec:
   selector:
     app: pollify-db
   ports:
     - port: 5432
-      targetPort: 5432
+  clusterIP: None  # Headless service for stateful DB access (optional)
